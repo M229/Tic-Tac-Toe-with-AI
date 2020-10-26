@@ -7,15 +7,25 @@ public class Main {
 
         System.out.print("Enter cells: ");
         Globals.input = scanner.nextLine();
-
-        createTable();
+        //loop for full game from empty field
+        /*createTable();
+        drawTable();
 
         while (Globals.activeState == Globals.States.GAME_NOT_FINISHED) {
-            drawTable();
             getCoordinates();
             makeMove();
             processState();
-        }
+            drawTable();
+            System.out.println(Globals.activeState.text);
+        }*/
+        //short version for test passing
+        createTable();
+        drawTable();
+        getCoordinates();
+        makeMove();
+        processState();
+        drawTable();
+        System.out.print(Globals.activeState.text);
     }
 
     private static void createTable() {
@@ -37,7 +47,7 @@ public class Main {
                 k++;
             }
         }
-        if (qtyX >= qtyO || qtyX == qtyO) {
+        if (qtyO >= qtyX || qtyX == qtyO) {
             Globals.symbolToMove = Globals.Symbols.X;
         } else {
             Globals.symbolToMove = Globals.Symbols.O;
@@ -75,6 +85,7 @@ public class Main {
         boolean validCoordinates = false;
         String s;
         char[] chars;
+        int[] transformedCoords = new int[2];
         Scanner scanner = new Scanner(System.in);
 
         while (validCoordinates == false) {
@@ -86,11 +97,12 @@ public class Main {
             if (chars[0] >= 48 && chars[0] <= 57 && chars[1] >= 48 && chars[1] <= 57) {
                 if (x >= minCoordinate - 1 && x <= maxCoordinate - 1
                         && y >= minCoordinate - 1 && y <= maxCoordinate - 1) {
-                    if (isCellOccupied(x, y)) {
+                    transformedCoords = converter(x, y);
+                    if (isCellOccupied(transformedCoords[0], transformedCoords[1])) {
                         System.out.println("This cell is occupied! Choose another one!");
                     } else {
-                        Globals.x = x;
-                        Globals.y = y;
+                        Globals.x = transformedCoords[0];
+                        Globals.y = transformedCoords[1];
                         validCoordinates = true;
                     }
                 } else {
@@ -112,14 +124,46 @@ public class Main {
     }
 
     private static void processState() {
+        //Checking for a win
+        for (int i = 0; i < 3; i++) {
+            switch (i) {
+                case 0:
+                    checkRows();
+                case 1:
+                    checkCols();
+                case 2:
+                    checkDigs();
+            }
+            if (Globals.activeState == Globals.States.O_WINS
+                    || Globals.activeState == Globals.States.X_WINS) {
+                break;
+            }
+        }
+        //If no winner yet, checking for a draw
+        if (Globals.activeState != Globals.States.O_WINS
+                && Globals.activeState != Globals.States.X_WINS) {
+            Globals.activeState = Globals.States.DRAW;
+            for (int i = 0; i < Globals.table.length; i++) {
+                for (int j = 0; j < Globals.table[0].length; j++) {
+                    if (Globals.table[i][j] == Globals.Symbols.EMPTY.tableSymbol) {
+                        Globals.activeState = Globals.States.GAME_NOT_FINISHED;
+                        break;
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    private static void checkRows() {
         int row = 1;
-        int col = 0;
         for (int i = 0; i < Globals.table.length; i++) {
             for (int j = 1; j < Globals.table[i].length; j++) {
                 if (Globals.table[i][j] != Globals.Symbols.EMPTY.tableSymbol
                         && Globals.table[i][j] == Globals.table[i][j - 1]) {
                     row++;
-                }
+                } else break;
             }
             if (row == Globals.table[i].length) {
                 if (Globals.table[i][0] == Globals.Symbols.X.tableSymbol) {
@@ -132,4 +176,69 @@ public class Main {
             row = 1;
         }
     }
+
+    private static void checkCols() {
+        int col = 1;
+        for (int j = 0; j < Globals.table[0].length; j++) {
+            for (int i = 1; i < Globals.table.length; i++) {
+                if (Globals.table[i][j] != Globals.Symbols.EMPTY.tableSymbol
+                        && Globals.table[i][j] == Globals.table[i - 1][j]) {
+                    col++;
+                } else break;
+            }
+            if (col == Globals.table.length) {
+                if (Globals.table[0][j] == Globals.Symbols.X.tableSymbol) {
+                    Globals.activeState = Globals.States.X_WINS;
+                } else if (Globals.table[0][j] == Globals.Symbols.O.tableSymbol) {
+                    Globals.activeState = Globals.States.O_WINS;
+                }
+                break;
+            }
+            col = 1;
+        }
+    }
+
+    private static void checkDigs() {
+        int digL = 1;
+        int digR = 1;
+        int i = 1;
+        int j = 1;
+        int index = Globals.table.length - 1;
+
+        while (i < Globals.table.length) {
+            if (Globals.table[i][j] != Globals.Symbols.EMPTY.tableSymbol
+                    && Globals.table[i][j] == Globals.table[i - 1][j - 1]) {
+                digL++;
+            }
+            if (Globals.table[i][index - j] != Globals.Symbols.EMPTY.tableSymbol
+                    && Globals.table[i][index - j] == Globals.table[i - 1][index - j + 1]) {
+                digR++;
+            }
+            i++;
+            j++;
+        }
+
+        if (digL == Globals.table.length) {
+            if (Globals.table[0][0] == Globals.Symbols.X.tableSymbol) {
+                Globals.activeState = Globals.States.X_WINS;
+            } else if (Globals.table[0][0] == Globals.Symbols.O.tableSymbol) {
+                Globals.activeState = Globals.States.O_WINS;
+            }
+        }
+        if (digR == Globals.table.length) {
+            if (Globals.table[0][index] == Globals.Symbols.X.tableSymbol) {
+                Globals.activeState = Globals.States.X_WINS;
+            } else if (Globals.table[0][index] == Globals.Symbols.O.tableSymbol) {
+                Globals.activeState = Globals.States.O_WINS;
+            }
+        }
+    }
+
+    private static int[] converter(int x, int y) {
+        int[] result = new int[2];
+        result[0] = Globals.table.length - y - 1;
+        result[1] = x;
+        return result;
+    }
+
 }
