@@ -7,7 +7,7 @@ public class Main {
 
         System.out.print("Enter cells: ");
         Globals.input = scanner.nextLine();
-        //loop for full game from empty field1
+        //loop for full game from empty field
         /*createTable();
         drawTable();
 
