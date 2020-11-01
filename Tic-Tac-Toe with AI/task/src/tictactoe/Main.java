@@ -18,7 +18,7 @@ public class Main {
             if (game.activeState == Game.States.GAME_NOT_FINISHED) {
                 ai.makeMove(game);
                 game.processState();
-                game.drawTable();
+                game.drawTable(); //2
             } else break;
         }
 
