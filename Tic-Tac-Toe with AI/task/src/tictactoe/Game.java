@@ -3,10 +3,11 @@ package tictactoe;
 import java.util.Scanner;
 
 public class Game {
-    final public int fieldSize = 3;
-    final public String tableVerticalBorder = "---------";
-    final public String tableHorizontalBorder = "|";
+    final public int fieldSize;
+    final public String tableVerticalBorder;
+    final public String tableHorizontalBorder;
     public String input;
+
     public enum Symbols {
         X('X', 'X'),
         O('O', 'O'),
@@ -20,7 +21,7 @@ public class Game {
             this.tableSymbol = tableSymbol;
         }
     }
-    public Symbols symbolToMove = Symbols.X;
+    public Symbols symbolToMove;
 
     public enum States {
         GAME_NOT_FINISHED("Game not finished"),
@@ -35,9 +36,28 @@ public class Game {
         }
 
     }
-    public States activeState = States.GAME_NOT_FINISHED;
+    public States activeState;
 
-    public char[][] table = new char[fieldSize][fieldSize];
+    public char[][] table;
+
+    public Game() {
+        this.fieldSize = 3;
+        this.tableVerticalBorder = "---------";
+        this.tableHorizontalBorder = "|";
+
+        this.symbolToMove = Game.Symbols.X;
+
+        this.activeState = Game.States.GAME_NOT_FINISHED;
+
+        this.table = new char[fieldSize][fieldSize];
+
+        for (int i = 0; i < this.table.length; i++) {
+            for (int j = 0; j < this.table[i].length; j++) {
+                this.table[i][j] = Symbols.EMPTY.tableSymbol;
+            }
+        }
+        this.symbolToMove = Symbols.X;
+    }
 
     public void drawMove(int x, int y) {
         this.table[x][y] = this.symbolToMove.tableSymbol;
@@ -46,41 +66,6 @@ public class Game {
         } else if (this.symbolToMove == Game.Symbols.O) {
             this.symbolToMove = Game.Symbols.X;
         }
-    }
-
-    public void createTable() {
-        char[] chars = this.input.toCharArray();
-        int k = 0;
-        int qtyX = 0;
-        int qtyO = 0;
-        for (int i = 0; i < this.table.length; i++) {
-            for (int j = 0; j < this.table[i].length; j++) {
-                if (chars[k] == Symbols.X.inputSymbol) {
-                    this.table[i][j] = Symbols.X.tableSymbol;
-                    qtyX++;
-                } else if (chars[k] == Symbols.O.inputSymbol) {
-                    this.table[i][j] = Symbols.O.tableSymbol;
-                    qtyO++;
-                } else {
-                    this.table[i][j] = Symbols.EMPTY.tableSymbol;
-                }
-                k++;
-            }
-        }
-        if (qtyO >= qtyX) {
-            this.symbolToMove = Symbols.X;
-        } else {
-            this.symbolToMove = Symbols.O;
-        }
-    }
-
-    public void createTable(String str) {
-        for (int i = 0; i < this.table.length; i++) {
-            for (int j = 0; j < this.table[i].length; j++) {
-                this.table[i][j] = Symbols.EMPTY.tableSymbol;
-            }
-        }
-            this.symbolToMove = Symbols.X;
     }
 
     public void drawTable() {

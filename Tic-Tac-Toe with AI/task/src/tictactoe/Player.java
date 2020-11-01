@@ -1,19 +1,47 @@
 package tictactoe;
 
+import java.util.Random;
 import java.util.Scanner;
 
 public class Player {
 
-    protected String announce = "Enter the coordinates: ";
+    enum Type {
+        USER("user"),
+        AI_EASY("easy"),
+        AI_MEDIUM("medium"),
+        AI_HARD("hard");
+
+
+        String text;
+
+        Type(String text) {
+            this.text = text;
+        }
+    }
+
+    Type type;
+
     protected int x;
     protected int y;
 
+    public Player(Type type) {
+        this.type = type;
+        this.x = 0;
+        this.y = 0;
+    }
+
     public void makeMove(Game game) {
-        getCoordinates(game);
+        switch (this.type) {
+            case USER: getCoordinatesUser(game); break;
+            case AI_EASY:
+            case AI_MEDIUM:
+            case AI_HARD: getCoordinatesAI(game); break;
+        }
         game.drawMove(x, y);
     }
 
-    public void getCoordinates(Game game) {
+    private void getCoordinatesUser(Game game) {
+        final String announce = "Enter the coordinates: ";
         final int minCoordinate = 1;
         final int maxCoordinate = game.table.length;
         int raw_x;
@@ -48,5 +76,23 @@ public class Player {
                 System.out.println("You should enter numbers!");
             }
         }
+    }
+
+    private void getCoordinatesAI(Game game) {
+        String announce = "Making move level \"easy\"";
+        int raw_x = 0;
+        int raw_y = 0;
+        boolean cellOccupied = false;
+
+        Random random = new Random();
+
+        do {
+            raw_x = random.nextInt(game.fieldSize);
+            raw_y = random.nextInt(game.fieldSize);
+        } while (game.isCellOccupied(raw_x, raw_y));
+
+        x = raw_x;
+        y = raw_y;
+        System.out.println(announce);
     }
 }
