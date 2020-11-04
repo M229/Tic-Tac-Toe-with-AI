@@ -5,7 +5,16 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Game game = new Game();
-        AI ai = new AI();
+        game.isSettingsPicked();
+
+        if (game.isSettingsPicked()) {
+            Player player_1 = new Player(game.settings[0]);
+            Player player_2 = new Player(game.settings[1]);
+        }
+
+
+
+        /*
         Player player = new Player();
 
         game.createTable("Empty");
@@ -23,7 +32,7 @@ public class Main {
         }
 
         System.out.println(game.activeState.text);
-
+        */
     }
 }
 
