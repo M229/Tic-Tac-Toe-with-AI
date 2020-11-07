@@ -8,7 +8,9 @@ public class Game {
     final public String tableVerticalBorder;
     final public String tableHorizontalBorder;
     public Player.Type[] settings;
+    public int movesCounter;
     public int inputLength;
+
 
     public enum Symbols {
         X('X', 'X'),
@@ -47,6 +49,7 @@ public class Game {
         this.tableVerticalBorder = "---------";
         this.tableHorizontalBorder = "|";
         this.settings = new Player.Type[2];
+        this.movesCounter = 0;
         this.inputLength = 3;
 
         this.symbolToMove = Game.Symbols.X;
@@ -68,7 +71,7 @@ public class Game {
         String[] arr;
         Scanner scanner = new Scanner(System.in);
         do {
-            System.out.println("Input command:");
+            System.out.print("Input command: ");
             str = scanner.nextLine();
             arr = str.split(" ");
             if (arr.length == inputLength) {
@@ -94,7 +97,7 @@ public class Game {
         return true;
     }
 
-    public void drawMove(int x, int y) {
+    protected void drawMove(int x, int y) {
         this.table[x][y] = this.symbolToMove.tableSymbol;
         if (this.symbolToMove == Game.Symbols.X) {
             this.symbolToMove = Game.Symbols.O;
@@ -116,7 +119,7 @@ public class Game {
         System.out.println(this.tableVerticalBorder);
     }
 
-    public boolean isCellOccupied(int x, int y) {
+    protected boolean isCellOccupied(int x, int y) {
         return this.table[x][y] != Symbols.EMPTY.tableSymbol;
     }
 
