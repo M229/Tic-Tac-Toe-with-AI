@@ -21,7 +21,7 @@ public class Player {
 
     Type type;
 
-    protected int x;
+    protected int x; //
     protected int y;
 
     public Player(Type type) {
