@@ -14,43 +14,14 @@ public class Main {
             //Game cycle
             while (game.activeState == Game.States.GAME_NOT_FINISHED) {
                 player_1.makeMove(game);
-                game.drawTable();
                 game.processState();
-                game.movesCounter ++;
                 if (game.activeState == Game.States.GAME_NOT_FINISHED) {
                     player_2.makeMove(game);
-                    game.drawTable();
                     game.processState();
-                    game.movesCounter++;
                 } else break;
             }
-
             System.out.println(game.activeState.text);
         }
-
-
-
-
-
-        /*
-        Player player = new Player();
-
-        game.createTable("Empty");
-        game.drawTable();
-
-        while (game.activeState == Game.States.GAME_NOT_FINISHED) {
-            player.makeMove(game);
-            game.processState();
-            game.drawTable();
-            if (game.activeState == Game.States.GAME_NOT_FINISHED) {
-                ai.makeMove(game);
-                game.processState();
-                game.drawTable();
-            } else break;
-        }
-
-        System.out.println(game.activeState.text);
-        */
     }
 }
 
