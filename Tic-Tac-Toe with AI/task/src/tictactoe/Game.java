@@ -1,12 +1,17 @@
 package tictactoe;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Game {
-    final public int fieldSize = 3;
-    final public String tableVerticalBorder = "---------";
-    final public String tableHorizontalBorder = "|";
-    public String input;
+    final public int fieldSize;
+    final public String tableVerticalBorder;
+    final public String tableHorizontalBorder;
+    public Player.Type[] settings;
+    public int movesCounter;
+    public int inputLength;
+
+
     public enum Symbols {
         X('X', 'X'),
         O('O', 'O'),
@@ -20,7 +25,7 @@ public class Game {
             this.tableSymbol = tableSymbol;
         }
     }
-    public Symbols symbolToMove = Symbols.X;
+    public Symbols symbolToMove;
 
     public enum States {
         GAME_NOT_FINISHED("Game not finished"),
@@ -35,11 +40,64 @@ public class Game {
         }
 
     }
-    public States activeState = States.GAME_NOT_FINISHED;
+    public States activeState;
 
-    public char[][] table = new char[fieldSize][fieldSize];
+    public char[][] table;
 
-    public void drawMove(int x, int y) {
+    public Game() {
+        this.fieldSize = 3;
+        this.tableVerticalBorder = "---------";
+        this.tableHorizontalBorder = "|";
+        this.settings = new Player.Type[2];
+        this.movesCounter = 0;
+        this.inputLength = 3;
+
+        this.symbolToMove = Game.Symbols.X;
+
+        this.activeState = Game.States.GAME_NOT_FINISHED;
+
+        this.table = new char[fieldSize][fieldSize];
+
+        for (char[] chars : this.table) {
+            Arrays.fill(chars, Symbols.EMPTY.tableSymbol);
+        }
+        this.symbolToMove = Symbols.X;
+    }
+
+    public boolean isSettingsPicked() {
+        boolean validInput = false;
+        String err_msg = "Bad parameters!";
+        String str;
+        String[] arr;
+        Scanner scanner = new Scanner(System.in);
+        do {
+            System.out.print("Input command: ");
+            str = scanner.nextLine();
+            arr = str.split(" ");
+            if (arr.length == inputLength) {
+                if ("start".equals(arr[0])) {
+                    for (int i = 1; i < arr.length; i++) {
+                        validInput = true;
+                        if (checkEnumByText(arr[i]) == null) {
+                            validInput = false;
+                            break;
+                        }
+                    }
+                }
+            } else if ("exit".equals(arr[0])) {
+                return false;
+                //break;
+            }
+            if (!validInput) {
+                System.out.println(err_msg);
+            }
+        } while (!validInput);
+        this.settings[0] = checkEnumByText(arr[1]);
+        this.settings[1] = checkEnumByText(arr[2]);
+        return true;
+    }
+
+    protected void drawMove(int x, int y) {
         this.table[x][y] = this.symbolToMove.tableSymbol;
         if (this.symbolToMove == Game.Symbols.X) {
             this.symbolToMove = Game.Symbols.O;
@@ -48,47 +106,12 @@ public class Game {
         }
     }
 
-    public void createTable() {
-        char[] chars = this.input.toCharArray();
-        int k = 0;
-        int qtyX = 0;
-        int qtyO = 0;
-        for (int i = 0; i < this.table.length; i++) {
-            for (int j = 0; j < this.table[i].length; j++) {
-                if (chars[k] == Symbols.X.inputSymbol) {
-                    this.table[i][j] = Symbols.X.tableSymbol;
-                    qtyX++;
-                } else if (chars[k] == Symbols.O.inputSymbol) {
-                    this.table[i][j] = Symbols.O.tableSymbol;
-                    qtyO++;
-                } else {
-                    this.table[i][j] = Symbols.EMPTY.tableSymbol;
-                }
-                k++;
-            }
-        }
-        if (qtyO >= qtyX) {
-            this.symbolToMove = Symbols.X;
-        } else {
-            this.symbolToMove = Symbols.O;
-        }
-    }
-
-    public void createTable(String str) {
-        for (int i = 0; i < this.table.length; i++) {
-            for (int j = 0; j < this.table[i].length; j++) {
-                this.table[i][j] = Symbols.EMPTY.tableSymbol;
-            }
-        }
-            this.symbolToMove = Symbols.X;
-    }
-
     public void drawTable() {
         System.out.println(this.tableVerticalBorder);
-        for (int i = 0; i < this.table.length; i++) {
+        for (char[] chars : this.table) {
             System.out.print(this.tableHorizontalBorder + " ");
-            for (int j = 0; j < this.table[i].length; j++) {
-                System.out.print(this.table[i][j] + " ");
+            for (char aChar : chars) {
+                System.out.print(aChar + " ");
             }
             System.out.print(this.tableHorizontalBorder + " ");
             System.out.println();
@@ -96,11 +119,12 @@ public class Game {
         System.out.println(this.tableVerticalBorder);
     }
 
-    public boolean isCellOccupied(int x, int y) {
+    protected boolean isCellOccupied(int x, int y) {
         return this.table[x][y] != Symbols.EMPTY.tableSymbol;
     }
 
     public void processState() {
+        drawTable();
         //Checking for a win
         for (int i = 0; i < 3; i++) {
             switch (i) {
@@ -120,32 +144,32 @@ public class Game {
         if (this.activeState != States.O_WINS
                 && this.activeState != States.X_WINS) {
             this.activeState = States.DRAW;
-            for (int i = 0; i < this.table.length; i++) {
+            for (char[] chars : this.table) {
                 for (int j = 0; j < this.table[0].length; j++) {
-                    if (this.table[i][j] == Symbols.EMPTY.tableSymbol) {
+                    if (chars[j] == Symbols.EMPTY.tableSymbol) {
                         this.activeState = States.GAME_NOT_FINISHED;
                         break;
                     }
                 }
             }
         }
-
+        this.movesCounter++;
 
     }
 
     public void checkRows() {
         int row = 1;
-        for (int i = 0; i < this.table.length; i++) {
-            for (int j = 1; j < this.table[i].length; j++) {
-                if (this.table[i][j] != Symbols.EMPTY.tableSymbol
-                        && this.table[i][j] == this.table[i][j - 1]) {
+        for (char[] chars : this.table) {
+            for (int j = 1; j < chars.length; j++) {
+                if (chars[j] != Symbols.EMPTY.tableSymbol
+                        && chars[j] == chars[j - 1]) {
                     row++;
                 } else break;
             }
-            if (row == this.table[i].length) {
-                if (this.table[i][0] == Symbols.X.tableSymbol) {
+            if (row == chars.length) {
+                if (chars[0] == Symbols.X.tableSymbol) {
                     this.activeState = States.X_WINS;
-                } else if (this.table[i][0] == Symbols.O.tableSymbol) {
+                } else if (chars[0] == Symbols.O.tableSymbol) {
                     this.activeState = States.O_WINS;
                 }
                 break;
@@ -216,5 +240,14 @@ public class Game {
         result[0] = this.table.length - y - 1;
         result[1] = x;
         return result;
+    }
+
+    private Player.Type checkEnumByText(String str) {
+        for (Player.Type type: Player.Type.values()) {
+            if (type.text.equals(str)) {
+                return type;
+            }
+        }
+        return null;
     }
 }
