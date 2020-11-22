@@ -196,8 +196,6 @@ public class Player {
             }
         }
 
-
-
         if (winInOneMove) {
             x = col;
             y = row;
@@ -211,8 +209,5 @@ public class Player {
             y = raw_y;
         }
         System.out.println(announce);
-
-
-
     }
 }
