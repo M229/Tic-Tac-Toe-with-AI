@@ -22,6 +22,8 @@ public class Main {
             }
             System.out.println(game.activeState.text);
         }
+
+
     }
 }
 

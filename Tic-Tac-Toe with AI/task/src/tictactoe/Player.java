@@ -21,6 +21,8 @@ public class Player {
 
     Type type;
 
+    public Game.Symbols symbolToMove;
+
     protected int x; //
     protected int y;
 
@@ -29,13 +31,13 @@ public class Player {
         this.x = 0;
         this.y = 0;
     }
-
+    //Getting coordinates and draw symbol using game method
     public void makeMove(Game game) {
         switch (this.type) {
             case USER: getCoordinatesUser(game); break;
-            case AI_EASY:
-            case AI_MEDIUM:
-            case AI_HARD: getCoordinatesAI(game); break;
+            case AI_EASY: getCoordinatesAIEasy(game); break;
+            case AI_MEDIUM: getCoordinatesAIMedium(game); break;
+            case AI_HARD: break;
         }
         game.drawMove(x, y);
     }
@@ -78,7 +80,7 @@ public class Player {
         }
     }
 
-    private void getCoordinatesAI(Game game) {
+    private void getCoordinatesAIEasy(Game game) {
         String announce = "Making move level \"easy\"";
         int raw_x = 0;
         int raw_y = 0;
@@ -94,5 +96,134 @@ public class Player {
         x = raw_x;
         y = raw_y;
         System.out.println(announce);
+    }
+
+    private void getCoordinatesAIMedium(Game game) {
+        String announce = "Making move level \"medium\"";
+        boolean cellOccupied = false;
+        boolean winInOneMove = false;
+        int k = 0;
+        int index = game.table.length - 1;
+        int raw_x;
+        int raw_y;
+        int row = 0;
+        int col = 0;
+        int fill_counter = 0;
+        int empty_counter = 0;
+        int[] winInOneMoveXY = new int[2];
+        Game.Symbols opponentSymbol = Game.Symbols.X;
+
+        //finding opponent's symbol
+        opponentSymbol = game.symbolToMove == Game.Symbols.O ? Game.Symbols.X : Game.Symbols.O;
+
+        //checking rows
+        for (int i = 0; i < game.table.length; i++) {
+            for (int j = 0; j < game.table[i].length; j++) {
+                if (game.table[i][j] == opponentSymbol.tableSymbol) {
+                    fill_counter++;
+                } else if (game.table[i][j] == Game.Symbols.EMPTY.tableSymbol) {
+                    col = i;
+                    row = j;
+                    empty_counter++;
+                }
+            }
+            if (fill_counter == game.table.length - 1 && empty_counter == 1) {
+                winInOneMove = true;
+                break;
+            } else {
+                col = 0;
+                row = 0;
+                fill_counter = 0;
+                empty_counter = 0;
+            }
+        }
+
+        //checking cols
+        if (!winInOneMove) {
+            for (int j = 0; j < game.table.length; j++) {
+                for (int i = 0; i < game.table.length; i++) {
+                    if (game.table[i][j] == opponentSymbol.tableSymbol) {
+                        fill_counter++;
+                    } else if (game.table[i][j] == Game.Symbols.EMPTY.tableSymbol) {
+                        col = i;
+                        row = j;
+                        empty_counter++;
+                    }
+                }
+                if (fill_counter == game.table.length - 1 && empty_counter == 1) {
+                    winInOneMove = true;
+                    break;
+                } else {
+                    col = 0;
+                    row = 0;
+                    fill_counter = 0;
+                    empty_counter = 0;
+                }
+            }
+        }
+
+        //checking left diagonal
+        if (!winInOneMove) {
+            while (k < game.table.length) {
+                if (game.table[k][k] == opponentSymbol.tableSymbol) {
+                    fill_counter++;
+                } else if (game.table[k][k] == Game.Symbols.EMPTY.tableSymbol) {
+                    col = k;
+                    row = k;
+                    empty_counter++;
+                }
+                k++;
+            }
+            if (fill_counter == game.table.length - 1 && empty_counter == 1) {
+                winInOneMove = true;
+            } else {
+                k = 0;
+                col = 0;
+                row = 0;
+                fill_counter = 0;
+                empty_counter = 0;
+            }
+        }
+
+        //checking right diagonal
+        if (!winInOneMove) {
+            while (k < game.table.length) {
+                if (game.table[k][index - k] == opponentSymbol.tableSymbol) {
+                    fill_counter++;
+                } else if (game.table[k][index - k] == Game.Symbols.EMPTY.tableSymbol) {
+                    col = k;
+                    row = index - k;
+                    empty_counter++;
+                }
+                k++;
+            }
+            if (fill_counter == game.table.length - 1 && empty_counter == 1) {
+                winInOneMove = true;
+            } else {
+                col = 0;
+                row = 0;
+                fill_counter = 0;
+                empty_counter = 0;
+            }
+        }
+
+
+
+        if (winInOneMove) {
+            x = col;
+            y = row;
+        } else {
+            Random random = new Random();
+            do {
+                raw_x = random.nextInt(game.fieldSize);
+                raw_y = random.nextInt(game.fieldSize);
+            } while (game.isCellOccupied(raw_x, raw_y));
+            x = raw_x;
+            y = raw_y;
+        }
+        System.out.println(announce);
+
+
+
     }
 }
