@@ -11,7 +11,6 @@ public class Player {
         AI_MEDIUM("medium"),
         AI_HARD("hard");
 
-
         String text;
 
         Type(String text) {
@@ -20,8 +19,6 @@ public class Player {
     }
 
     Type type;
-
-    public Game.Symbols symbolToMove;
 
     protected int x; //
     protected int y;
@@ -82,9 +79,8 @@ public class Player {
 
     private void getCoordinatesAIEasy(Game game) {
         String announce = "Making move level \"easy\"";
-        int raw_x = 0;
-        int raw_y = 0;
-        boolean cellOccupied = false;
+        int raw_x;
+        int raw_y;
 
         Random random = new Random();
 
@@ -100,7 +96,6 @@ public class Player {
 
     private void getCoordinatesAIMedium(Game game) {
         String announce = "Making move level \"medium\"";
-        boolean cellOccupied = false;
         boolean winInOneMove = false;
         int k = 0;
         int index = game.table.length - 1;
@@ -110,8 +105,7 @@ public class Player {
         int col = 0;
         int fill_counter = 0;
         int empty_counter = 0;
-        int[] winInOneMoveXY = new int[2];
-        Game.Symbols opponentSymbol = Game.Symbols.X;
+        Game.Symbols opponentSymbol;
 
         //finding opponent's symbol
         opponentSymbol = game.symbolToMove == Game.Symbols.O ? Game.Symbols.X : Game.Symbols.O;
@@ -199,11 +193,6 @@ public class Player {
             }
             if (fill_counter == game.table.length - 1 && empty_counter == 1) {
                 winInOneMove = true;
-            } else {
-                col = 0;
-                row = 0;
-                fill_counter = 0;
-                empty_counter = 0;
             }
         }
 
