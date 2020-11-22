@@ -11,7 +11,6 @@ public class Game {
     public int movesCounter;
     public int inputLength;
 
-
     public enum Symbols {
         X('X', 'X'),
         O('O', 'O'),
